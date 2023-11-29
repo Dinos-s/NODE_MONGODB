@@ -3,16 +3,38 @@ const User = require('../models/User')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
-// rota privad
+// rota publica para ver o usuário pelo id
+// router.get('/user/:id', async (req, res) => {
+//     const id = req.params.id
+
+//     const user = await User.findById(id, '-password')
+//     if(!user){
+//         return res.status(404).json({msg: 'User not found'})
+//     }
+
+//     res.status(200).json({user})
+// })
+
+// rota privada
 router.get('/user/:id', checkToken, async(req, res)=>{
     const id = req.params.id
 
     const user = await User.findById(id, '-password')
+     
     if(!user){
         return res.status(404).json({msg: 'User not found'})
     }
 
     res.status(200).json({user})
+})
+
+router.get('/users', async (req, res) => {
+    try {
+        const users = await User.find().select('-password')
+        res.status(200).json(users)
+    } catch (error) {
+        res.status(500).json({error: error})
+    }
 })
 
 //check token
@@ -65,8 +87,8 @@ router.post('/auth/register', async (req, res) => {
 
     //create user
     const user = new User({
-        name,
-        email,
+        name: name,
+        email: email,
         password: passwordHash,
     })
 
@@ -103,7 +125,8 @@ router.post('/auth/login', async(req, res) => {
     try {
         const secret = process.env.SECRET
         const token = jwt.sign({
-            id: user._id
+            id: user._id,
+            name: user.name,
         }, secret)
         res.status(200).json({msg: 'Autenticação realizada com sucesso', token})
     } catch (error) {
@@ -111,5 +134,22 @@ router.post('/auth/login', async(req, res) => {
     }
     
 })
+
+// rota privada para excluir usuário
+router.delete('/user/:id', checkToken, async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const deletedUser = await User.findByIdAndDelete(id);
+
+        if (!deletedUser) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+
+        res.status(200).json({ msg: 'User deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 module.exports = router

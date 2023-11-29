@@ -20,8 +20,8 @@ const user = process.env.DB_USER
 const pass = process.env.DB_PASS
 
 // porta de saida
-mongoose.connect(`mongodb+srv://${user}:${pass}@cluster0.3dv7faz.mongodb.net/?retryWrites=true&w=majority`).then(()=>{
-    console.log('Conectado ao Mongo');
+mongoose.connect(`mongodb+srv://${user}:${pass}@cluster0.ntd77a9.mongodb.net/?retryWrites=true&w=majority`).then(()=>{
+    console.log('Conectado ao MongoAtlas Conectato');
     app.listen(3000)
 }).catch((err) => {
     console.log(err);
