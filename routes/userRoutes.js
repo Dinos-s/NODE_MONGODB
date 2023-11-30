@@ -16,7 +16,7 @@ const jwt = require('jsonwebtoken')
 // })
 
 // rota privada
-router.get('/user/:id', checkToken, async(req, res)=>{
+router.get('/user/auth/:id', checkToken, async(req, res)=>{
     const id = req.params.id
 
     const user = await User.findById(id, '-password')
